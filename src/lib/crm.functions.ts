@@ -731,7 +731,7 @@ export const saveServerUrl = createServerFn({ method: "POST" })
     const t = await testServerUrl(n.url);
     if (!t.ok) return { ok: false, message: `${t.message} — بقي الرابط السابق كما هو`, url: await getServerUrl() };
     const { supabaseAdmin } = await import("@/lib/db.server");
-    const { error } = await supabaseAdmin.from("app_settings").upsert({ key: "server_url", value: n.url, updated_at: new Date().toISOString() });
+    const { error } = await supabaseAdmin.from("app_settings").upsert({ key: "server_url", value: 0, text_value: n.url, updated_at: new Date().toISOString() });
     if (error) return { ok: false, message: "تعذّر الحفظ — بقي الرابط السابق", url: await getServerUrl() };
     clearServerUrlCache();
     return { ok: true, message: "تم الحفظ", url: n.url };

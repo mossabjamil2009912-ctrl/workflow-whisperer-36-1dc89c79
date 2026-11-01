@@ -11,8 +11,8 @@ export async function getServerUrl(): Promise<string> {
   let url = DEFAULT_SERVER_URL;
   try {
     const { supabaseAdmin } = await import("@/lib/db.server");
-    const { data } = await supabaseAdmin.from("app_settings").select("value").eq("key", "server_url").maybeSingle();
-    const n = typeof data?.value === "string" ? normalizeServerUrl(data.value) : null;
+    const { data } = await supabaseAdmin.from("app_settings").select("text_value").eq("key", "server_url").maybeSingle();
+    const n = typeof data?.text_value === "string" ? normalizeServerUrl(data.text_value) : null;
     if (n?.ok) url = n.url;
   } catch (e) { console.error("server_url read failed", e); }
   cache = { url, at: Date.now() };
