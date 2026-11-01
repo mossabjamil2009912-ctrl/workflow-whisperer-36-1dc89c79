@@ -115,7 +115,7 @@ export function BotFlow({ pw }: { pw: string }) {
                   const texts = ms.filter((r) => r.t === "t");
                   const btns = ms.filter((r) => r.t === "b");
                   return (
-                    <div key={ms[0].m} className="space-y-2 rounded-lg border bg-background p-2">
+                    <div key={ms[0]?.m} className="space-y-2 rounded-lg border bg-background p-2">
                       {texts.length > 0 && <div className="flex items-center gap-1 text-xs text-muted-foreground"><MessageSquareText className="h-3.5 w-3.5" />رسالة{texts.length > 1 ? ` — ${texts.length} أجزاء، وبينها قيم يضيفها البوت` : ""}</div>}
                       {texts.map((r) => <Field key={r.k + (saved.get(r.k)?.updated_at ?? "")} row={r} saved={saved.get(r.k)} onSave={onSave(r.k)} />)}
                       {btns.length > 0 && <div className="text-xs text-muted-foreground">الأزرار / الخيارات</div>}
