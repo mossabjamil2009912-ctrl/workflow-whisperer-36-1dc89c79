@@ -644,3 +644,57 @@ export const saveBotText = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+// Added steps ("المسار" phase 2): a custom message with buttons/list shown after a bot button is pressed.
+const stepOption = z.object({
+  title: z.string().trim().min(1).max(24), desc: z.string().max(72).optional(),
+  goto: z.object({ type: z.enum(["continue", "step", "button"]), value: z.string().max(100).default("") }),
+});
+const stepInput = z.object({
+  pw: z.string(), id: z.string().max(20).optional(),
+  trigger_key: z.string().max(40).nullable(), section: z.string().max(100).nullable(),
+  body: z.string().trim().min(1).max(1000), kind: z.enum(["buttons", "list"]),
+  list_button: z.string().max(20).nullable(), options: z.array(stepOption).min(1).max(10), active: z.boolean(),
+}).refine((s) => s.kind === "list" || s.options.length <= 3, "الأزرار حتى 3 فقط — استخدم قائمة لأكثر")
+  .refine((s) => s.kind === "list" || s.options.every((o) => o.title.length <= 20), "اسم الزر لازم 20 حرف أو أقل");
+
+export const listBotSteps = createServerFn({ method: "POST" })
+  .inputValidator((d) => z.object({ pw: z.string() }).parse(d))
+  .handler(async ({ data }) => {
+    check(data.pw);
+    const { supabaseAdmin } = await import("@/lib/db.server");
+    const { data: rows, error } = await supabaseAdmin.from("bot_steps").select("*").order("created_at");
+    if (error) throw new Error(error.message);
+    return rows;
+  });
+
+export const saveBotStep = createServerFn({ method: "POST" })
+  .inputValidator((d) => stepInput.parse(d))
+  .handler(async ({ data }) => {
+    check(data.pw);
+    const { pw: _pw, id, ...rest } = data;
+    let trigger_id: string | null = null, trigger_title: string | null = null;
+    if (rest.trigger_key) {
+      const all = (await import("@/lib/bot-texts.json")).default as { k: string; t: string; o: string; b?: string }[];
+      const b = all.find((r) => r.k === rest.trigger_key && r.t === "b");
+      if (!b) throw new Error("الزر غير موجود");
+      trigger_id = b.b ?? null; trigger_title = b.o;
+    }
+    const { supabaseAdmin } = await import("@/lib/db.server");
+    const row = { ...rest, trigger_id, trigger_title, updated_at: new Date().toISOString() };
+    const { error } = id
+      ? await supabaseAdmin.from("bot_steps").update(row).eq("id", id)
+      : await supabaseAdmin.from("bot_steps").insert(row);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const deleteBotStep = createServerFn({ method: "POST" })
+  .inputValidator((d) => z.object({ pw: z.string(), id: z.string().max(20) }).parse(d))
+  .handler(async ({ data }) => {
+    check(data.pw);
+    const { supabaseAdmin } = await import("@/lib/db.server");
+    const { error } = await supabaseAdmin.from("bot_steps").delete().eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
