@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { FlowPinGate } from "@/components/FlowPinGate";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { WaText } from "@/components/WaText";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
