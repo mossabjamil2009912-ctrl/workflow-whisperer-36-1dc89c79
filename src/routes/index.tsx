@@ -285,6 +285,7 @@ function Dashboard({ pw, onLogout }: { pw: string; onLogout: () => void }) {
 
   return (
     <div dir="rtl" className="flex min-h-screen flex-col bg-background text-foreground lg:h-screen lg:overflow-hidden">
+      <FrontendRedirect />
       {!online && (
         <div className="bg-accent px-3 py-1 text-center text-xs font-semibold text-accent-foreground">
           أنت دون إنترنت — {savedAt ? `تعرض آخر نسخة محفوظة على الجهاز من {new Date(savedAt).toLocaleString("ar", { dateStyle: "short", timeStyle: "short" })}` : "لم تُحفظ نسخة على الجهاز بعد — افتح التطبيق مرة واحدة والإنترنت شغّال"}، وتتحدث تلقائياُ عند عودة الاتصال
