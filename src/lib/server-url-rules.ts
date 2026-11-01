@@ -1,5 +1,6 @@
 // Pure validation for the bot server (n8n) URL — shared by server and UI, no secrets here.
-export const DEFAULT_SERVER_URL = "https://n8n.srv1994780.hstgr.cloud";
+export const N8N_URL = "https://n8n.srv1994780.hstgr.cloud"; // fixed, not editable
+export const DEFAULT_FRONTEND_URL = "https://workflow-whisperer-36.lovable.app";
 
 export function normalizeServerUrl(input: string): { ok: true; url: string } | { ok: false; error: string } {
   let u: URL;

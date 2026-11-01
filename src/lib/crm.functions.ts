@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { N8N_URL, DEFAULT_FRONTEND_URL, normalizeServerUrl } from "@/lib/server-url-rules";
 
 function check(pw: string) {
   const real = process.env["DASHBOARD_PASSWORD"];
@@ -97,7 +98,7 @@ export const sendMessage = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/lib/db.server");
     const { data: c, error } = await supabaseAdmin.from("customers").select("phone").eq("id", data.id).single();
     if (error || !c) throw new Error("العميل غير موجود");
-    const res = await fetch(`${await (await import("@/lib/server-url.server")).getServerUrl()}/webhook/actes-send`, {
+    const res = await fetch(`${N8N_URL}/webhook/actes-send`, {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-bot-secret": process.env["BOT_INGEST_SECRET"] ?? "" },
       body: JSON.stringify({ phone: c.phone, text: data.text }),
@@ -145,7 +146,7 @@ export const sendAttachment = createServerFn({ method: "POST" })
     const url = sig.data.signedUrl;
     const m = data.mime;
     const kind = m.startsWith("image/") ? "image" : m.startsWith("video/") ? "video" : m.startsWith("audio/") ? "audio" : m === "application/pdf" ? "pdf" : "document";
-    const res = await fetch(`${await (await import("@/lib/server-url.server")).getServerUrl()}/webhook/actes-send`, {
+    const res = await fetch(`${N8N_URL}/webhook/actes-send`, {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-bot-secret": process.env["BOT_INGEST_SECRET"] ?? "" },
       body: JSON.stringify({ phone: c.phone, text: data.text, media_url: url, media_type: kind, file_name: data.file_name }),
@@ -199,7 +200,7 @@ export const decideOrder = createServerFn({ method: "POST" })
     if (error || !o) throw new Error("الطلب غير موجود");
     if (o.status !== "pending") throw new Error("تم البت في هذا الطلب مسبقاً");
     const text = data.status === "confirmed" ? CONFIRM_TEXT : CANCEL_TEXT;
-    const res = await fetch(`${await (await import("@/lib/server-url.server")).getServerUrl()}/webhook/actes-send`, {
+    const res = await fetch(`${N8N_URL}/webhook/actes-send`, {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-bot-secret": process.env["BOT_INGEST_SECRET"] ?? "" },
       body: JSON.stringify({ phone: o.phone, text }),
@@ -247,7 +248,7 @@ export const updateTicket = createServerFn({ method: "POST" })
     const tpl = TICKET_TEXT[data.status];
     if (tpl && t.status !== data.status) {
       const text = tpl.replace("{no}", t.ticket_no);
-      const res = await fetch(`${await (await import("@/lib/server-url.server")).getServerUrl()}/webhook/actes-send`, {
+      const res = await fetch(`${N8N_URL}/webhook/actes-send`, {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-bot-secret": process.env["BOT_INGEST_SECRET"] ?? "" },
         body: JSON.stringify({ phone: t.phone, text }),
@@ -293,7 +294,7 @@ export const replyTicket = createServerFn({ method: "POST" })
     const { data: t } = await supabaseAdmin.from("support_tickets").select("*").eq("id", data.id).single();
     if (!t) throw new Error("التذكرة غير موجودة");
     const text = `أكتس لاستيراد أنظمة الطاقة\nبخصوص تذكرة الدعم ${t.ticket_no}:\n\n${data.text}`;
-    const res = await fetch(`${await (await import("@/lib/server-url.server")).getServerUrl()}/webhook/actes-send`, {
+    const res = await fetch(`${N8N_URL}/webhook/actes-send`, {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-bot-secret": process.env["BOT_INGEST_SECRET"] ?? "" },
       body: JSON.stringify({ phone: t.phone, text }),
@@ -559,7 +560,7 @@ export const sendReportRequest = createServerFn({ method: "POST" })
     if (sig.error || !sig.data) throw new Error("تعذّر إنشاء رابط الملف");
     const url = sig.data.signedUrl;
     const text = `أكتس لاستيراد أنظمة الطاقة\n${REPORT_LABEL[kind]} لمنظومتك`;
-    const res = await fetch(`${await (await import("@/lib/server-url.server")).getServerUrl()}/webhook/actes-send`, {
+    const res = await fetch(`${N8N_URL}/webhook/actes-send`, {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-bot-secret": process.env["BOT_INGEST_SECRET"] ?? "" },
       body: JSON.stringify({ phone: rq.phone, text, media_url: url, media_type: "pdf", file_name: f.file_name }),
@@ -699,40 +700,42 @@ export const deleteBotStep = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
-// Connection settings: bot server (n8n) base URL, tested before it is saved.
-export const getServerSettings = createServerFn({ method: "POST" })
-  .inputValidator((d) => z.object({ pw: z.string() }).parse(d))
-  .handler(async ({ data }) => {
-    check(data.pw);
-    const { getServerUrl } = await import("@/lib/server-url.server");
-    const { DEFAULT_SERVER_URL } = await import("@/lib/server-url-rules");
-    return { url: await getServerUrl(), defaultUrl: DEFAULT_SERVER_URL };
-  });
+// Connection settings: frontend (app) URL. Installed PWAs on the old host redirect to it on start.
+async function readFrontendUrl() {
+  const { supabaseAdmin } = await import("@/lib/db.server");
+  const { data } = await supabaseAdmin.from("app_settings").select("text_value").eq("key", "frontend_url").maybeSingle();
+  const n = data?.text_value ? normalizeServerUrl(data.text_value) : null;
+  return n?.ok ? n.url : DEFAULT_FRONTEND_URL;
+}
 
-export const testServerConnection = createServerFn({ method: "POST" })
+async function probe(url: string) {
+  try {
+    const r = await fetch(url, { signal: AbortSignal.timeout(8000) });
+    return r.ok ? { ok: true, message: "الاتصال ناجح" } : { ok: false, message: `الرابط رد بخطأ (${r.status})` };
+  } catch { return { ok: false, message: "تعذّر الوصول إلى الرابط" }; }
+}
+
+// Public: returns only the frontend URL so installed apps can follow a move.
+export const getFrontendUrl = createServerFn({ method: "GET" }).handler(async () => ({ url: await readFrontendUrl(), defaultUrl: DEFAULT_FRONTEND_URL }));
+
+export const testFrontendUrl = createServerFn({ method: "POST" })
   .inputValidator((d) => z.object({ pw: z.string(), url: z.string().max(300) }).parse(d))
   .handler(async ({ data }) => {
     check(data.pw);
-    const { normalizeServerUrl } = await import("@/lib/server-url-rules");
     const n = normalizeServerUrl(data.url);
-    if (!n.ok) return { ok: false, message: n.error };
-    const { testServerUrl } = await import("@/lib/server-url.server");
-    return testServerUrl(n.url);
+    return n.ok ? probe(n.url) : { ok: false, message: n.error };
   });
 
-export const saveServerUrl = createServerFn({ method: "POST" })
+export const saveFrontendUrl = createServerFn({ method: "POST" })
   .inputValidator((d) => z.object({ pw: z.string(), url: z.string().max(300), reset: z.boolean().optional() }).parse(d))
   .handler(async ({ data }) => {
     check(data.pw);
-    const { normalizeServerUrl, DEFAULT_SERVER_URL } = await import("@/lib/server-url-rules");
-    const n = normalizeServerUrl(data.reset ? DEFAULT_SERVER_URL : data.url);
+    const n = normalizeServerUrl(data.reset ? DEFAULT_FRONTEND_URL : data.url);
     if (!n.ok) return { ok: false, message: n.error };
-    const { testServerUrl, clearServerUrlCache, getServerUrl } = await import("@/lib/server-url.server");
-    const t = await testServerUrl(n.url);
-    if (!t.ok) return { ok: false, message: `${t.message} — بقي الرابط السابق كما هو`, url: await getServerUrl() };
+    const t = await probe(n.url);
+    if (!t.ok) return { ok: false, message: `${t.message} — بقي الرابط السابق كما هو`, url: await readFrontendUrl() };
     const { supabaseAdmin } = await import("@/lib/db.server");
-    const { error } = await supabaseAdmin.from("app_settings").upsert({ key: "server_url", value: 0, text_value: n.url, updated_at: new Date().toISOString() });
-    if (error) return { ok: false, message: "تعذّر الحفظ — بقي الرابط السابق", url: await getServerUrl() };
-    clearServerUrlCache();
+    const { error } = await supabaseAdmin.from("app_settings").upsert({ key: "frontend_url", value: 0, text_value: n.url, updated_at: new Date().toISOString() });
+    if (error) return { ok: false, message: "تعذّر الحفظ — بقي الرابط السابق", url: await readFrontendUrl() };
     return { ok: true, message: "تم الحفظ", url: n.url };
   });

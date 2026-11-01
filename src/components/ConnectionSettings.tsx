@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Settings, X } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
-import { getServerSettings, saveServerUrl, testServerConnection } from "@/lib/crm.functions";
+import { getFrontendUrl, saveFrontendUrl, testFrontendUrl } from "@/lib/crm.functions";
 
 export function ConnectionSettings({ pw }: { pw: string }) {
   const [open, setOpen] = useState(false);
@@ -10,14 +10,14 @@ export function ConnectionSettings({ pw }: { pw: string }) {
   const [url, setUrl] = useState("");
   const [msg, setMsg] = useState<{ ok: boolean; t: string } | null>(null);
   const [busy, setBusy] = useState(false);
-  const get = useServerFn(getServerSettings);
-  const test = useServerFn(testServerConnection);
-  const save = useServerFn(saveServerUrl);
+  const get = useServerFn(getFrontendUrl);
+  const test = useServerFn(testFrontendUrl);
+  const save = useServerFn(saveFrontendUrl);
 
   useEffect(() => {
     if (!open) return;
     setMsg(null);
-    get({ data: { pw } }).then((r) => { setCurrent(r.url); setDef(r.defaultUrl); setUrl(r.url); }).catch((e) => setMsg({ ok: false, t: e.message }));
+    get().then((r) => { setCurrent(r.url); setDef(r.defaultUrl); setUrl(r.url); }).catch((e) => setMsg({ ok: false, t: e.message }));
   }, [open]);
 
   const run = async (fn: () => Promise<{ ok: boolean; message: string; url?: string }>) => {
@@ -39,7 +39,7 @@ export function ConnectionSettings({ pw }: { pw: string }) {
               <h2 className="font-bold">إعدادات الاتصال</h2>
               <button onClick={() => setOpen(false)} aria-label="إغلاق"><X className="h-4 w-4" /></button>
             </div>
-            <div className="text-sm"><span className="text-muted-foreground">الرابط الحالي: </span><span dir="ltr" className="font-mono">{current || "..."}</span></div>
+            <div className="text-sm"><span className="text-muted-foreground">رابط واجهة التطبيق: </span><span dir="ltr" className="font-mono">{current || "..."}</span></div>
             <input dir="ltr" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://..."
               className="w-full rounded-lg border border-input bg-background px-3 py-2 font-mono text-sm" />
             {msg && <p className={`text-sm ${msg.ok ? "text-primary" : "text-destructive"}`}>{msg.t}</p>}
