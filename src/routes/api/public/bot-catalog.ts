@@ -40,7 +40,13 @@ export const Route = createFileRoute("/api/public/bot-catalog")({
           else if (r.value != null) BOT_TEXTS.TEXT.push([r.original, r.value]);
         }
         BOT_TEXTS.TEXT.sort((a, b) => b[0].length - a[0].length);
-        return Response.json({ settings: { kwh_price }, KWH_PRICE: kwh_price, updated_at: new Date().toISOString(), ITEM_PRICES: prices, ITEMS: items, CATALOG_FILES: files, AUTO_RULES: autoRules, BOT_TEXTS });
+        // Added steps: shown when the customer presses trigger_id (title matched against original or edited title).
+        const { data: steps } = await supabaseAdmin.from("bot_steps").select("id,trigger_id,trigger_title,body,kind,list_button,options").eq("active", true);
+        const BOT_STEPS = (steps ?? []).map((s) => {
+          const edited = BOT_TEXTS.BTN.find((b) => b[0] === s.trigger_id && b[1] === s.trigger_title)?.[2];
+          return { ...s, trigger_titles: [s.trigger_title, edited].filter(Boolean) };
+        });
+        return Response.json({ settings: { kwh_price }, KWH_PRICE: kwh_price, updated_at: new Date().toISOString(), ITEM_PRICES: prices, ITEMS: items, CATALOG_FILES: files, AUTO_RULES: autoRules, BOT_TEXTS, BOT_STEPS });
       },
     },
   },
