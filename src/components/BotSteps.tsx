@@ -16,7 +16,7 @@ const BTNS = (() => {
 })();
 
 const optsOf = (s?: Step): Opt[] => (Array.isArray(s?.options) ? (s!.options as unknown as Opt[]) : []);
-const stepName = (s: Step) => s.body.split("\n")[0].slice(0, 40);
+const stepName = (s: Step) => (s.body.split("\n")[0] ?? "").slice(0, 40);
 
 export function StepEditor({ pw, step, triggerKey, section, steps, onDone }: { pw: string; step?: Step; triggerKey: string | null; section: string | null; steps: Step[]; onDone: () => void }) {
   const save = useServerFn(saveBotStep);
