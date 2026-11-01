@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "app.lovable.workflow_whisperer_36.twa",
+        "sha256_cert_fingerprints": ["6C:30:3F:8F:22:AE:EB:7B:94:29:B2:1A:24:9C:F5:B0:A3:7F:F8:1A:31:D8:19:9D:C8:4D:E9:20:E7:44:F2:8A"]
+      }
+    }]

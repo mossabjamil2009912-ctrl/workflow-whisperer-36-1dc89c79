@@ -142,3 +142,117 @@
     color: var(--color-foreground);
   }
 }
+
+/* ACTES CRM theme */
+:root {
+  --background: oklch(0.975 0.004 260);
+  --foreground: oklch(0.22 0.03 200);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.22 0.03 200);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.22 0.03 200);
+  --primary: oklch(0.57 0.23 25);
+  --primary-foreground: oklch(0.99 0 0);
+  --ink: oklch(0.22 0.02 260);
+  --ink-foreground: oklch(0.98 0 0);
+  --s-purple: oklch(0.42 0.14 305);
+  --s-green: oklch(0.6 0.13 165);
+  --s-blue: oklch(0.62 0.16 255);
+  --s-gray: oklch(0.5 0.03 255);
+  --secondary: oklch(0.94 0.02 180);
+  --secondary-foreground: oklch(0.3 0.05 190);
+  --muted: oklch(0.95 0.01 95);
+  --muted-foreground: oklch(0.5 0.02 200);
+  --accent: oklch(0.8 0.15 75);
+  --accent-foreground: oklch(0.25 0.05 60);
+  --border: oklch(0.9 0.01 120);
+  --input: oklch(0.9 0.01 120);
+  --ring: oklch(0.57 0.23 25);
+  --bubble-in: oklch(1 0 0);
+  --bubble-out: oklch(0.93 0.05 150);
+  --bubble-agent: oklch(0.94 0.06 85);
+  --chat-bg: oklch(0.94 0.015 95);
+  --st-quote: oklch(0.93 0.08 75);
+  --st-quote-fg: oklch(0.42 0.11 60);
+  --st-buy: oklch(0.9 0.1 155);
+  --st-buy-fg: oklch(0.38 0.11 155);
+  --st-human: oklch(0.9 0.07 250);
+  --st-human-fg: oklch(0.42 0.17 255);
+  --st-cod: oklch(0.92 0.06 230);
+  --st-cod-fg: oklch(0.42 0.12 240);
+  --st-sld: oklch(0.92 0.06 300);
+  --st-sld-fg: oklch(0.42 0.14 300);
+}
+.dark {
+  --background: oklch(0.17 0.02 210);
+  --foreground: oklch(0.94 0.01 95);
+  --card: oklch(0.22 0.025 205);
+  --card-foreground: oklch(0.94 0.01 95);
+  --popover: oklch(0.22 0.025 205);
+  --popover-foreground: oklch(0.94 0.01 95);
+  --primary: oklch(0.6 0.21 25);
+  --primary-foreground: oklch(0.99 0 0);
+  --ink: oklch(0.13 0.015 260);
+  --ink-foreground: oklch(0.98 0 0);
+  --s-purple: oklch(0.6 0.14 305);
+  --s-green: oklch(0.65 0.13 165);
+  --s-blue: oklch(0.65 0.15 255);
+  --s-gray: oklch(0.6 0.03 255);
+  --secondary: oklch(0.3 0.04 190);
+  --secondary-foreground: oklch(0.92 0.02 180);
+  --muted: oklch(0.26 0.02 205);
+  --muted-foreground: oklch(0.7 0.02 200);
+  --accent: oklch(0.72 0.14 75);
+  --accent-foreground: oklch(0.2 0.04 60);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.6 0.09 185);
+  --bubble-in: oklch(0.26 0.02 205);
+  --bubble-out: oklch(0.36 0.06 165);
+  --bubble-agent: oklch(0.36 0.06 75);
+  --chat-bg: oklch(0.15 0.015 210);
+  --st-quote: oklch(0.35 0.07 70);
+  --st-quote-fg: oklch(0.88 0.1 80);
+  --st-buy: oklch(0.35 0.08 155);
+  --st-buy-fg: oklch(0.88 0.12 155);
+  --st-human: oklch(0.35 0.1 255);
+  --st-human-fg: oklch(0.88 0.08 250);
+  --st-cod: oklch(0.35 0.07 235);
+  --st-cod-fg: oklch(0.88 0.08 230);
+  --st-sld: oklch(0.35 0.08 300);
+  --st-sld-fg: oklch(0.88 0.08 300);
+}
+@theme inline {
+  --color-bubble-in: var(--bubble-in);
+  --color-bubble-out: var(--bubble-out);
+  --color-bubble-agent: var(--bubble-agent);
+  --color-chat-bg: var(--chat-bg);
+  --color-wa-bar: oklch(0.17 0 0);
+  --color-wa-bot: oklch(0.27 0.005 250);
+  --color-wa-me: oklch(0.42 0.14 255);
+  --color-wa-agent: oklch(0.36 0.09 160);
+  --color-wa-text: oklch(0.97 0 0);
+  --color-wa-muted: oklch(0.75 0.01 250);
+  --color-wa-link: oklch(0.68 0.15 245);
+  --color-wa-line: oklch(0.38 0.005 250);
+  --color-wa-mic: oklch(0.58 0.2 255);
+  --color-phone: oklch(0.12 0 0);
+  --color-st-quote: var(--st-quote);
+  --color-st-quote-fg: var(--st-quote-fg);
+  --color-st-buy: var(--st-buy);
+  --color-st-buy-fg: var(--st-buy-fg);
+  --color-st-human: var(--st-human);
+  --color-st-human-fg: var(--st-human-fg);
+  --color-st-cod: var(--st-cod);
+  --color-st-cod-fg: var(--st-cod-fg);
+  --color-st-sld: var(--st-sld);
+  --color-st-sld-fg: var(--st-sld-fg);
+  --color-ink: var(--ink);
+  --color-ink-foreground: var(--ink-foreground);
+  --color-s-purple: var(--s-purple);
+  --color-s-green: var(--s-green);
+  --color-s-blue: var(--s-blue);
+  --color-s-gray: var(--s-gray);
+  --color-s-red: var(--primary);
+  --font-sans: "IBM Plex Sans Arabic", system-ui, sans-serif;
+}

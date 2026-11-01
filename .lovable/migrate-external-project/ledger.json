@@ -1,0 +1,9 @@
+[
+  {"capability":"code","source":"github","outcome":"migrate","status":"verified","next_action":null},
+  {"capability":"schema","source":"drizzle migrations","outcome":"migrate","status":"verified","next_action":null},
+  {"capability":"records","source":"data/*.csv","outcome":"migrate","status":"verified","next_action":null},
+  {"capability":"uploaded files","source":"data/files/crm-attachments","outcome":"migrate","status":"verified","next_action":null},
+  {"capability":"auth","source":"dashboard password","outcome":"keep","status":"pending","next_action":"DASHBOARD_PASSWORD secret"},
+  {"capability":"n8n bot endpoints","source":"/api/public/bot-*","outcome":"keep","status":"pending","next_action":"BOT_INGEST_SECRET secret, point n8n at new published URL"},
+  {"capability":"cutover","source":"n8n workflows","outcome":"keep","status":"pending","next_action":"publish, update n8n base URL"}
+]
