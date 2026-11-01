@@ -128,6 +128,7 @@ function Login({ onOk }: { onOk: (p: string) => void }) {
   const [busy, setBusy] = useState(false);
   return (
     <div dir="rtl" className="flex min-h-screen items-center justify-center bg-background p-6">
+      <FrontendRedirect />
       <form
         className="w-full max-w-sm space-y-4 rounded-2xl border border-border bg-card p-6 shadow-sm"
         onSubmit={async (e) => {
