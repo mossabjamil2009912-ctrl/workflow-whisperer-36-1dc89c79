@@ -608,3 +608,39 @@ export const setKwhPrice = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { kwh_price: data.price };
   });
+
+// Bot texts editor ("المسار"): the list of texts comes from src/lib/bot-texts.json; the DB only stores edits.
+export const listBotTexts = createServerFn({ method: "POST" })
+  .inputValidator((d) => z.object({ pw: z.string() }).parse(d))
+  .handler(async ({ data }) => {
+    check(data.pw);
+    const { supabaseAdmin } = await import("@/lib/db.server");
+    const { data: rows, error } = await supabaseAdmin.from("bot_texts").select("key,value,desc_value,updated_at");
+    if (error) throw new Error(error.message);
+    return rows;
+  });
+
+export const saveBotText = createServerFn({ method: "POST" })
+  .inputValidator((d) => z.object({
+    pw: z.string(), key: z.string().max(40),
+    value: z.string().max(1000).nullable(), desc_value: z.string().max(72).nullable(),
+  }).parse(d))
+  .handler(async ({ data }) => {
+    check(data.pw);
+    const all = (await import("@/lib/bot-texts.json")).default as { k: string; m: string; t: string; s: string; o: string; b?: string; d?: string }[];
+    const row = all.find((r) => r.k === data.key);
+    if (!row) throw new Error("نص غير معروف");
+    if (row.t === "b" && data.value && data.value.length > 20) throw new Error("اسم الزر لازم 20 حرف أو أقل");
+    const { supabaseAdmin } = await import("@/lib/db.server");
+    if (data.value == null && data.desc_value == null) {
+      const { error } = await supabaseAdmin.from("bot_texts").delete().eq("key", data.key);
+      if (error) throw new Error(error.message);
+      return { ok: true };
+    }
+    const { error } = await supabaseAdmin.from("bot_texts").upsert({
+      key: row.k, msg_key: row.m, kind: row.t === "b" ? "button" : "text", section: row.s, original: row.o,
+      btn_id: row.b ?? null, btn_desc: row.d ?? null, value: data.value, desc_value: data.desc_value, updated_at: new Date().toISOString(),
+    });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });

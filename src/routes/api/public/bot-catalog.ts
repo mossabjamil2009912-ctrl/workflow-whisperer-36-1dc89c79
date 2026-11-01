@@ -32,7 +32,15 @@ export const Route = createFileRoute("/api/public/bot-catalog")({
         }
         const { data: st } = await supabaseAdmin.from("app_settings").select("value").eq("key", "kwh_price").maybeSingle();
         const kwh_price = st ? Number(st.value) : 290;
-        return Response.json({ settings: { kwh_price }, KWH_PRICE: kwh_price, updated_at: new Date().toISOString(), ITEM_PRICES: prices, ITEMS: items, CATALOG_FILES: files, AUTO_RULES: autoRules });
+        // Edited bot texts from the "المسار" screen: TEXT = [original fragment, new], BTN = [button id, original title, new title, new desc].
+        const { data: bt } = await supabaseAdmin.from("bot_texts").select("kind,original,value,btn_id,desc_value");
+        const BOT_TEXTS = { TEXT: [] as [string, string][], BTN: [] as [string, string, string | null, string | null][] };
+        for (const r of bt ?? []) {
+          if (r.kind === "button") BOT_TEXTS.BTN.push([r.btn_id ?? "", r.original, r.value, r.desc_value]);
+          else if (r.value != null) BOT_TEXTS.TEXT.push([r.original, r.value]);
+        }
+        BOT_TEXTS.TEXT.sort((a, b) => b[0].length - a[0].length);
+        return Response.json({ settings: { kwh_price }, KWH_PRICE: kwh_price, updated_at: new Date().toISOString(), ITEM_PRICES: prices, ITEMS: items, CATALOG_FILES: files, AUTO_RULES: autoRules, BOT_TEXTS });
       },
     },
   },

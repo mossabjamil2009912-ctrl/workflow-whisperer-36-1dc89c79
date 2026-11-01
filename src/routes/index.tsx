@@ -35,7 +35,8 @@ import { Orders, useOrders } from "@/components/Orders";
 import { Tickets, useTickets } from "@/components/Tickets";
 import { Catalog } from "@/components/Catalog";
 import { QuoteBuilder } from "@/components/QuoteBuilder";
-import { FilePlus2, FileBarChart } from "lucide-react";
+import { FilePlus2, FileBarChart, Route as RouteIcon } from "lucide-react";
+import { BotFlow } from "@/components/BotFlow";
 import { Reports, useReports } from "@/components/Reports";
 import logo from "@/assets/actes-logo.png";
 import logoClean from "@/assets/actes-logo-clean.png";
@@ -205,7 +206,7 @@ function Dashboard({ pw, onLogout }: { pw: string; onLogout: () => void }) {
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState<Stage | "all">("all");
   const [openId, setOpenId] = useState<string | null>(null);
-  const [view, setView] = useState<"chats" | "orders" | "reports" | "tickets" | "catalog" | "quote">("chats");
+  const [view, setView] = useState<"chats" | "orders" | "reports" | "tickets" | "catalog" | "quote" | "flow">("chats");
   const { data: rep } = useReports(pw);
   const pendingReports = (rep?.requests ?? []).filter((r) => r.status === "pending").length;
   const { data: tickets = [] } = useTickets(pw);
@@ -276,6 +277,7 @@ function Dashboard({ pw, onLogout }: { pw: string; onLogout: () => void }) {
     { k: "tickets" as const, l: "الدعم الفني", i: Headphones, n: openTickets },
     { k: "catalog" as const, l: "الأصناف", i: LayoutGrid, n: 0 },
     { k: "quote" as const, l: "إنشاء عرض سعر", i: FilePlus2, n: 0 },
+    { k: "flow" as const, l: "المسار", i: RouteIcon, n: 0 },
   ];
 
   return (
@@ -321,6 +323,7 @@ function Dashboard({ pw, onLogout }: { pw: string; onLogout: () => void }) {
         : view === "reports" ? <div className="rounded-xl border border-border bg-card lg:min-h-0 lg:flex-1 lg:overflow-y-auto"><Reports pw={pw} /></div>
         : view === "tickets" ? <div className="rounded-xl border border-border bg-card lg:min-h-0 lg:flex-1 lg:overflow-y-auto"><Tickets pw={pw} /></div>
         : view === "catalog" ? <div className="rounded-xl border border-border bg-card lg:min-h-0 lg:flex-1 lg:overflow-y-auto"><Catalog pw={pw} /></div>
+        : view === "flow" ? <div className="rounded-xl border border-border bg-card lg:min-h-0 lg:flex-1 lg:overflow-y-auto"><BotFlow pw={pw} /></div>
         : view === "quote" ? <div className="rounded-xl border border-border bg-background lg:min-h-0 lg:flex-1 lg:overflow-hidden"><QuoteBuilder pw={pw} /></div> : <>
         <div className="lg:grid lg:min-h-0 lg:flex-1 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-3">
         <div className="min-w-0 space-y-3 lg:flex lg:min-h-0 lg:flex-col">

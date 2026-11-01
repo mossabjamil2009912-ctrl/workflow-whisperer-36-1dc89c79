@@ -8,6 +8,13 @@
       "when": 1793548472974,
       "tag": "0000_import_actes_schema",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1793561089254,
+      "tag": "0001_bot_texts",
+      "breakpoints": true
     }
   ]
 }
