@@ -27,5 +27,5 @@
 - [x] PVsyst: customer picks city/tilt/direction in bot; report popup in dashboard; PVsyst logo + ACTES corner logo
 - [x] إصلاح تكرار رسائل البوت (بانتظار تجربة رسالة حقيقية)
 - [ ] دليل أكتس PDF v2 (المصدر في /mnt/documents/.lovable/guide)
-- [ ] ربط n8n من جديد بعد نقل المشروع لمساحة عمل جديدة
-- [ ] إكمال شاشة إضافة خطوات في «المسار»
+- [x] ربط n8n من جديد بعد نقل المشروع
+- [x] إضافة خطوات في «المسار»
