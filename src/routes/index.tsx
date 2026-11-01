@@ -40,7 +40,6 @@ import { Reports, useReports } from "@/components/Reports";
 import logo from "@/assets/actes-logo.png";
 import logoClean from "@/assets/actes-logo-clean.png";
 import logoWhite from "@/assets/actes-logo-white.png";
-import logoWhite from "@/assets/actes-logo-white.png";
 import waBg from "@/assets/actes-wa-bg.png.asset.json";
 
 export const Route = createFileRoute("/")({
