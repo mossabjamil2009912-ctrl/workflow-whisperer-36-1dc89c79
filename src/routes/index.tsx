@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { FrontendRedirect } from "@/components/FrontendRedirect";
 import { ConnectionSettings } from "@/components/ConnectionSettings";
 import { FlowPinGate } from "@/components/FlowPinGate";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
