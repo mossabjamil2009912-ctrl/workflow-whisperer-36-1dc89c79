@@ -39,6 +39,7 @@ import { FilePlus2, FileBarChart } from "lucide-react";
 import { Reports, useReports } from "@/components/Reports";
 import logo from "@/assets/actes-logo.png";
 import logoClean from "@/assets/actes-logo-clean.png";
+import logoWhite from "@/assets/actes-logo-white.png";
 import waBg from "@/assets/actes-wa-bg.png.asset.json";
 
 export const Route = createFileRoute("/")({
@@ -309,7 +310,7 @@ function Dashboard({ pw, onLogout }: { pw: string; onLogout: () => void }) {
               aria-label={muted ? "تشغيل صوت التنبيه" : "كتم صوت التنبيه"} className="rounded-md p-1.5 hover:bg-ink-foreground/10">
               {muted ? <BellOff className="h-4 w-4" /> : <Bell className="h-4 w-4" />}
             </button>
-            <img src={logoClean} alt="ACTES أكتس" className="h-9 w-auto shrink-0 md:h-10 lg:h-8" />
+            <img src={logoWhite} alt="ACTES أكتس" className="h-9 w-auto shrink-0 md:h-10 lg:h-8" />
           </div>
         </div>
       </header>
