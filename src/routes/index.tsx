@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { ConnectionSettings } from "@/components/ConnectionSettings";
 import { FlowPinGate } from "@/components/FlowPinGate";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { WaText } from "@/components/WaText";
@@ -306,6 +307,7 @@ function Dashboard({ pw, onLogout }: { pw: string; onLogout: () => void }) {
             ))}
           </nav>
           <div className="flex shrink-0 items-center gap-1">
+            <ConnectionSettings pw={pw} />
             <button onClick={toggleDark} aria-label={dark ? "الوضع الفاتح" : "الوضع الليلي"} className="rounded-md p-1.5 hover:bg-ink-foreground/10">
               {dark ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
             </button>
