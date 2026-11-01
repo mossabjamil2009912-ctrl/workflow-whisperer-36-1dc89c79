@@ -2,7 +2,9 @@ import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Search, Save, RotateCcw, ChevronLeft, MessageSquareText, Check } from "lucide-react";
-import { listBotTexts, saveBotText } from "@/lib/crm.functions";
+import { listBotTexts, saveBotText, listBotSteps } from "@/lib/crm.functions";
+import { StepEditor, StepCard } from "@/components/BotSteps";
+import { Plus } from "lucide-react";
 import { offlineQuery } from "@/lib/offline-cache";
 import ALL from "@/lib/bot-texts.json";
 
@@ -11,7 +13,7 @@ const TEXTS = ALL as T[];
 const ORDER = ["الترحيب والقائمة الرئيسية", "السكني", "التجاري", "الصناعي", "التخزين", "عرض السعر", "تعديل المنظومة", "طلب أصناف", "الموقع والمدينة", "دراسة PVsyst", "مخطط SLD", "التقارير", "الشراء والدفع", "التواصل مع المبيعات", "الدعم الفني", "رسائل الانتظار", "أزرار الرجوع", "رسائل عامة", "رسائل أخرى"];
 
 // Keep the original leading/trailing spaces and line breaks so the message layout stays intact.
-const edges = (s: string) => { const m = s.match(/^(\s*)([\s\S]*?)(\s*)$/)!; return [m[1], m[2], m[3]] as const; };
+const edges = (s: string) => { const m = s.match(/^(\s*)([\s\S]*?)(\s*)$/)!; return [m[1] ?? "", m[2] ?? "", m[3] ?? ""] as const; };
 
 function Field({ row, saved, onSave }: { row: T; saved: { value: string | null; desc_value: string | null } | undefined; onSave: (v: string | null, d: string | null) => Promise<void> }) {
   const [lead, core, trail] = edges(row.o);
@@ -52,9 +54,12 @@ export function BotFlow({ pw }: { pw: string }) {
   const list = useServerFn(listBotTexts);
   const saveFn = useServerFn(saveBotText);
   const { data: rows = [], refetch } = useQuery(offlineQuery({ queryKey: ["bot-texts"], queryFn: () => list({ data: { pw } }) }));
+  const listSteps = useServerFn(listBotSteps);
+  const { data: steps = [], refetch: refetchSteps } = useQuery(offlineQuery({ queryKey: ["bot-steps"], queryFn: () => listSteps({ data: { pw } }) }));
+  const [adding, setAdding] = useState<string | null>(null);
   const saved = useMemo(() => new Map(rows.map((r) => [r.key, r])), [rows]);
   const [q, setQ] = useState("");
-  const [open, setOpen] = useState<string | null>(ORDER[0]);
+  const [open, setOpen] = useState<string | null>(ORDER[0] ?? null);
 
   const sections = useMemo(() => {
     const qq = q.trim();
@@ -88,6 +93,12 @@ export function BotFlow({ pw }: { pw: string }) {
         <input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="ابحث عن كلمة في رسالة أو زر..." aria-label="بحث"
           className="w-full rounded-lg border border-input bg-background py-2 pl-3 pr-9 text-sm outline-none focus:ring-2 focus:ring-ring" />
       </div>
+      <div className="space-y-2 rounded-xl border bg-card p-2">
+        <div className="flex items-center gap-2"><b className="flex-1 text-sm text-primary">خطوات مستقلة (تُفتح من خطوات أخرى)</b>
+          <button onClick={() => setAdding("__free")} className="flex items-center gap-1 rounded-md bg-primary px-2 py-1 text-xs font-bold text-primary-foreground"><Plus className="h-3.5 w-3.5" />خطوة</button></div>
+        {steps.filter((x) => !x.trigger_key).map((x) => <StepCard key={x.id} pw={pw} step={x} steps={steps} onChanged={() => void refetchSteps()} />)}
+        {adding === "__free" && <StepEditor pw={pw} triggerKey={null} section={null} steps={steps} onDone={() => { setAdding(null); void refetchSteps(); }} />}
+      </div>
       {sections.map(({ s, msgs, edited }) => {
         const isOpen = open === s || !!q.trim();
         return (
@@ -104,13 +115,24 @@ export function BotFlow({ pw }: { pw: string }) {
                   const texts = ms.filter((r) => r.t === "t");
                   const btns = ms.filter((r) => r.t === "b");
                   return (
-                    <div key={ms[0].m} className="space-y-2 rounded-lg border bg-background p-2">
+                    <div key={ms[0]?.m} className="space-y-2 rounded-lg border bg-background p-2">
                       {texts.length > 0 && <div className="flex items-center gap-1 text-xs text-muted-foreground"><MessageSquareText className="h-3.5 w-3.5" />رسالة{texts.length > 1 ? ` — ${texts.length} أجزاء، وبينها قيم يضيفها البوت` : ""}</div>}
                       {texts.map((r) => <Field key={r.k + (saved.get(r.k)?.updated_at ?? "")} row={r} saved={saved.get(r.k)} onSave={onSave(r.k)} />)}
                       {btns.length > 0 && <div className="text-xs text-muted-foreground">الأزرار / الخيارات</div>}
                       {btns.length > 0 && <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                        {btns.map((r) => <Field key={r.k + (saved.get(r.k)?.updated_at ?? "")} row={r} saved={saved.get(r.k)} onSave={onSave(r.k)} />)}
+                        {btns.map((r) => (
+                          <div key={r.k} className="space-y-1">
+                            <Field key={r.k + (saved.get(r.k)?.updated_at ?? "")} row={r} saved={saved.get(r.k)} onSave={onSave(r.k)} />
+                            <button onClick={() => setAdding(r.k)} className="flex items-center gap-1 text-xs text-primary hover:underline"><Plus className="h-3 w-3" />إضافة خطوة بعد هذا الزر</button>
+                          </div>
+                        ))}
                       </div>}
+                      {btns.map((r) => (
+                        <div key={"s" + r.k} className="space-y-2">
+                          {steps.filter((x) => x.trigger_key === r.k).map((x) => <div key={x.id}><div className="mb-1 text-xs text-muted-foreground">بعد زر «{r.o}»:</div><StepCard pw={pw} step={x} steps={steps} onChanged={() => void refetchSteps()} /></div>)}
+                          {adding === r.k && <StepEditor pw={pw} triggerKey={r.k} section={s} steps={steps} onDone={() => { setAdding(null); void refetchSteps(); }} />}
+                        </div>
+                      ))}
                     </div>
                   );
                 })}
