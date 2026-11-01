@@ -97,7 +97,7 @@ export const sendMessage = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/lib/db.server");
     const { data: c, error } = await supabaseAdmin.from("customers").select("phone").eq("id", data.id).single();
     if (error || !c) throw new Error("العميل غير موجود");
-    const res = await fetch("https://n8n.srv1994780.hstgr.cloud/webhook/actes-send", {
+    const res = await fetch(`${await (await import("@/lib/server-url.server")).getServerUrl()}/webhook/actes-send`, {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-bot-secret": process.env["BOT_INGEST_SECRET"] ?? "" },
       body: JSON.stringify({ phone: c.phone, text: data.text }),
@@ -145,7 +145,7 @@ export const sendAttachment = createServerFn({ method: "POST" })
     const url = sig.data.signedUrl;
     const m = data.mime;
     const kind = m.startsWith("image/") ? "image" : m.startsWith("video/") ? "video" : m.startsWith("audio/") ? "audio" : m === "application/pdf" ? "pdf" : "document";
-    const res = await fetch("https://n8n.srv1994780.hstgr.cloud/webhook/actes-send", {
+    const res = await fetch(`${await (await import("@/lib/server-url.server")).getServerUrl()}/webhook/actes-send`, {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-bot-secret": process.env["BOT_INGEST_SECRET"] ?? "" },
       body: JSON.stringify({ phone: c.phone, text: data.text, media_url: url, media_type: kind, file_name: data.file_name }),
@@ -199,7 +199,7 @@ export const decideOrder = createServerFn({ method: "POST" })
     if (error || !o) throw new Error("الطلب غير موجود");
     if (o.status !== "pending") throw new Error("تم البت في هذا الطلب مسبقاً");
     const text = data.status === "confirmed" ? CONFIRM_TEXT : CANCEL_TEXT;
-    const res = await fetch("https://n8n.srv1994780.hstgr.cloud/webhook/actes-send", {
+    const res = await fetch(`${await (await import("@/lib/server-url.server")).getServerUrl()}/webhook/actes-send`, {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-bot-secret": process.env["BOT_INGEST_SECRET"] ?? "" },
       body: JSON.stringify({ phone: o.phone, text }),
@@ -247,7 +247,7 @@ export const updateTicket = createServerFn({ method: "POST" })
     const tpl = TICKET_TEXT[data.status];
     if (tpl && t.status !== data.status) {
       const text = tpl.replace("{no}", t.ticket_no);
-      const res = await fetch("https://n8n.srv1994780.hstgr.cloud/webhook/actes-send", {
+      const res = await fetch(`${await (await import("@/lib/server-url.server")).getServerUrl()}/webhook/actes-send`, {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-bot-secret": process.env["BOT_INGEST_SECRET"] ?? "" },
         body: JSON.stringify({ phone: t.phone, text }),
@@ -293,7 +293,7 @@ export const replyTicket = createServerFn({ method: "POST" })
     const { data: t } = await supabaseAdmin.from("support_tickets").select("*").eq("id", data.id).single();
     if (!t) throw new Error("التذكرة غير موجودة");
     const text = `أكتس لاستيراد أنظمة الطاقة\nبخصوص تذكرة الدعم ${t.ticket_no}:\n\n${data.text}`;
-    const res = await fetch("https://n8n.srv1994780.hstgr.cloud/webhook/actes-send", {
+    const res = await fetch(`${await (await import("@/lib/server-url.server")).getServerUrl()}/webhook/actes-send`, {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-bot-secret": process.env["BOT_INGEST_SECRET"] ?? "" },
       body: JSON.stringify({ phone: t.phone, text }),
@@ -559,7 +559,7 @@ export const sendReportRequest = createServerFn({ method: "POST" })
     if (sig.error || !sig.data) throw new Error("تعذّر إنشاء رابط الملف");
     const url = sig.data.signedUrl;
     const text = `أكتس لاستيراد أنظمة الطاقة\n${REPORT_LABEL[kind]} لمنظومتك`;
-    const res = await fetch("https://n8n.srv1994780.hstgr.cloud/webhook/actes-send", {
+    const res = await fetch(`${await (await import("@/lib/server-url.server")).getServerUrl()}/webhook/actes-send`, {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-bot-secret": process.env["BOT_INGEST_SECRET"] ?? "" },
       body: JSON.stringify({ phone: rq.phone, text, media_url: url, media_type: "pdf", file_name: f.file_name }),
@@ -697,4 +697,42 @@ export const deleteBotStep = createServerFn({ method: "POST" })
     const { error } = await supabaseAdmin.from("bot_steps").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
+  });
+
+// Connection settings: bot server (n8n) base URL, tested before it is saved.
+export const getServerSettings = createServerFn({ method: "POST" })
+  .inputValidator((d) => z.object({ pw: z.string() }).parse(d))
+  .handler(async ({ data }) => {
+    check(data.pw);
+    const { getServerUrl } = await import("@/lib/server-url.server");
+    const { DEFAULT_SERVER_URL } = await import("@/lib/server-url-rules");
+    return { url: await getServerUrl(), defaultUrl: DEFAULT_SERVER_URL };
+  });
+
+export const testServerConnection = createServerFn({ method: "POST" })
+  .inputValidator((d) => z.object({ pw: z.string(), url: z.string().max(300) }).parse(d))
+  .handler(async ({ data }) => {
+    check(data.pw);
+    const { normalizeServerUrl } = await import("@/lib/server-url-rules");
+    const n = normalizeServerUrl(data.url);
+    if (!n.ok) return { ok: false, message: n.error };
+    const { testServerUrl } = await import("@/lib/server-url.server");
+    return testServerUrl(n.url);
+  });
+
+export const saveServerUrl = createServerFn({ method: "POST" })
+  .inputValidator((d) => z.object({ pw: z.string(), url: z.string().max(300), reset: z.boolean().optional() }).parse(d))
+  .handler(async ({ data }) => {
+    check(data.pw);
+    const { normalizeServerUrl, DEFAULT_SERVER_URL } = await import("@/lib/server-url-rules");
+    const n = normalizeServerUrl(data.reset ? DEFAULT_SERVER_URL : data.url);
+    if (!n.ok) return { ok: false, message: n.error };
+    const { testServerUrl, clearServerUrlCache, getServerUrl } = await import("@/lib/server-url.server");
+    const t = await testServerUrl(n.url);
+    if (!t.ok) return { ok: false, message: `${t.message} — بقي الرابط السابق كما هو`, url: await getServerUrl() };
+    const { supabaseAdmin } = await import("@/lib/db.server");
+    const { error } = await supabaseAdmin.from("app_settings").upsert({ key: "server_url", value: 0, text_value: n.url, updated_at: new Date().toISOString() });
+    if (error) return { ok: false, message: "تعذّر الحفظ — بقي الرابط السابق", url: await getServerUrl() };
+    clearServerUrlCache();
+    return { ok: true, message: "تم الحفظ", url: n.url };
   });

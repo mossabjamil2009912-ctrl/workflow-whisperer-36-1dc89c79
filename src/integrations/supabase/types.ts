@@ -17,16 +17,19 @@ export type Database = {
       app_settings: {
         Row: {
           key: string
+          text_value: string | null
           updated_at: string
           value: number
         }
         Insert: {
           key: string
+          text_value?: string | null
           updated_at?: string
           value: number
         }
         Update: {
           key?: string
+          text_value?: string | null
           updated_at?: string
           value?: number
         }
