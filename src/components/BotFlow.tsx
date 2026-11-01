@@ -13,7 +13,7 @@ const ORDER = ["الترحيب والقائمة الرئيسية", "السكني
 // Keep the original leading/trailing spaces and line breaks so the message layout stays intact.
 const edges = (s: string) => { const m = s.match(/^(\s*)([\s\S]*?)(\s*)$/)!; return [m[1], m[2], m[3]] as const; };
 
-function Field({ row, saved, onSave }: { row: T; saved?: { value: string | null; desc_value: string | null }; onSave: (v: string | null, d: string | null) => Promise<void> }) {
+function Field({ row, saved, onSave }: { row: T; saved: { value: string | null; desc_value: string | null } | undefined; onSave: (v: string | null, d: string | null) => Promise<void> }) {
   const [lead, core, trail] = edges(row.o);
   const cur = saved?.value != null ? edges(saved.value)[1] : core;
   const [v, setV] = useState(cur);
