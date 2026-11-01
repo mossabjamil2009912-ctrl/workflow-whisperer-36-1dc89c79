@@ -12,7 +12,8 @@ export const Route = createFileRoute("/api/public/crm-media")({
         if (!id || !process.env["DASHBOARD_PASSWORD"]) return new Response("Not found", { status: 404 });
         const { mediaToken } = await import("@/lib/media-token.server");
         if (t !== (await mediaToken(id))) return new Response("Unauthorized", { status: 401 });
-        const r = await fetch(`https://n8n.srv1994780.hstgr.cloud/webhook/actes-media?id=${id}`, {
+        const { getServerUrl } = await import("@/lib/server-url.server");
+        const r = await fetch(`${await getServerUrl()}/webhook/actes-media?id=${id}`, {
           headers: { "x-bot-secret": process.env["BOT_INGEST_SECRET"] ?? "" },
         });
         if (!r.ok) return new Response("الملف غير متاح (ربما انتهت صلاحيته في واتساب)", { status: 404 });
