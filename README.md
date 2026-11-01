@@ -1,14 +1,43 @@
-# Welcome to your Lovable project
+# Workflow Whisperer
+
+صنف الانفرتر مكرر في بعض العروض تأكد
+
+
+
+ابحث في n8n لماذا 
+
+
+
+
+
+
+
+
+
+https://n8n.srv1994780.hstgr.cloud/workflow/twQV31OWjucubtx2
+
+
+
+
+
+
+
+
+
+
+
 
 This project was built with [Lovable](https://lovable.dev).
 
+**Live app**: https://workflow-whisperer-36.lovable.app
+
 ## Build with Lovable
 
-Open your project in the [Lovable editor](https://lovable.dev) and keep building.
+Continue developing this project in the [Lovable editor](https://lovable.dev/projects/da8c9e93-2abc-4059-896a-6220e5bceff8).
 
 - **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: connect the project to GitHub and every change made in Lovable is committed straight to your repository.
-- **Full ownership**: this code is yours. Push to your repository and your changes sync back into Lovable, ready for your next prompt.
+- **Stay in sync**: every change made in Lovable is committed straight to this repository.
+- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
 
 ## Development
 
@@ -20,10 +49,3 @@ cd <repository-name>
 npm i
 npm run dev
 ```
-
-## Built with
-
-- TanStack Start
-- TypeScript
-- React
-- Tailwind CSS
