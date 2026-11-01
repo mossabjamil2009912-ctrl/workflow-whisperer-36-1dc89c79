@@ -53,6 +53,51 @@ export type Database = {
         }
         Relationships: []
       }
+      bot_steps: {
+        Row: {
+          active: boolean
+          body: string
+          created_at: string
+          id: string
+          kind: string
+          list_button: string | null
+          options: Json
+          section: string | null
+          trigger_id: string | null
+          trigger_key: string | null
+          trigger_title: string | null
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          body?: string
+          created_at?: string
+          id?: string
+          kind?: string
+          list_button?: string | null
+          options?: Json
+          section?: string | null
+          trigger_id?: string | null
+          trigger_key?: string | null
+          trigger_title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          body?: string
+          created_at?: string
+          id?: string
+          kind?: string
+          list_button?: string | null
+          options?: Json
+          section?: string | null
+          trigger_id?: string | null
+          trigger_key?: string | null
+          trigger_title?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       bot_texts: {
         Row: {
           btn_desc: string | null
