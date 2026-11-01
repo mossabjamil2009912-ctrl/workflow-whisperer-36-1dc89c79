@@ -13,7 +13,7 @@ const TEXTS = ALL as T[];
 const ORDER = ["الترحيب والقائمة الرئيسية", "السكني", "التجاري", "الصناعي", "التخزين", "عرض السعر", "تعديل المنظومة", "طلب أصناف", "الموقع والمدينة", "دراسة PVsyst", "مخطط SLD", "التقارير", "الشراء والدفع", "التواصل مع المبيعات", "الدعم الفني", "رسائل الانتظار", "أزرار الرجوع", "رسائل عامة", "رسائل أخرى"];
 
 // Keep the original leading/trailing spaces and line breaks so the message layout stays intact.
-const edges = (s: string) => { const m = s.match(/^(\s*)([\s\S]*?)(\s*)$/)!; return [m[1], m[2], m[3]] as const; };
+const edges = (s: string) => { const m = s.match(/^(\s*)([\s\S]*?)(\s*)$/)!; return [m[1] ?? "", m[2] ?? "", m[3] ?? ""] as const; };
 
 function Field({ row, saved, onSave }: { row: T; saved: { value: string | null; desc_value: string | null } | undefined; onSave: (v: string | null, d: string | null) => Promise<void> }) {
   const [lead, core, trail] = edges(row.o);
@@ -59,7 +59,7 @@ export function BotFlow({ pw }: { pw: string }) {
   const [adding, setAdding] = useState<string | null>(null);
   const saved = useMemo(() => new Map(rows.map((r) => [r.key, r])), [rows]);
   const [q, setQ] = useState("");
-  const [open, setOpen] = useState<string | null>(ORDER[0]);
+  const [open, setOpen] = useState<string | null>(ORDER[0] ?? null);
 
   const sections = useMemo(() => {
     const qq = q.trim();
