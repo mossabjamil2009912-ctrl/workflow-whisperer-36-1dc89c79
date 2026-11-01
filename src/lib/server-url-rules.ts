@@ -10,7 +10,7 @@ export function normalizeServerUrl(input: string): { ok: true; url: string } | {
   const h = u.hostname.toLowerCase().replace(/^\[|\]$/g, "");
   if (!h.includes(".") || h === "localhost" || /\.(local|internal|localhost|lan|home|corp)$/.test(h)) return { ok: false, error: "لا يُسمح بالعناوين المحلية أو الداخلية" };
   if (/^\d+(\.\d+){3}$/.test(h)) {
-    const [a, b] = h.split(".").map(Number);
+    const [a = 0, b = 0] = h.split(".").map(Number);
     if (a === 0 || a === 10 || a === 127 || (a === 169 && b === 254) || (a === 172 && b >= 16 && b <= 31) || (a === 192 && b === 168) || (a === 100 && b >= 64 && b <= 127) || a >= 224)
       return { ok: false, error: "لا يُسمح بالعناوين المحلية أو الداخلية" };
   }
