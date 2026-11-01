@@ -396,7 +396,7 @@ function Dashboard({ pw, onLogout }: { pw: string; onLogout: () => void }) {
               <div className="relative flex aspect-[9/19] h-full flex-col items-center justify-center gap-3 overflow-hidden rounded-[2.6rem] border-[10px] border-phone bg-phone text-wa-muted shadow-2xl">
                 <div className="absolute left-1/2 top-1.5 h-5 w-24 -translate-x-1/2 rounded-full bg-background/10" />
                 <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-wa-text/10 via-transparent to-transparent" />
-                <img src={logoClean} alt="" className="h-14 w-auto opacity-30" />
+                <img src={logoWhite} alt="" className="h-14 w-auto opacity-90" />
                 <MessageCircle className="h-8 w-8 opacity-40" />
                 <span className="px-6 text-center text-xs opacity-60">اختر محادثة من القائمة لعرضها هنا</span>
               </div>
