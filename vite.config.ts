@@ -7,6 +7,9 @@
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 import { VitePWA } from "vite-plugin-pwa";
 
+// One version per build, shared by the client bundle and /api/public/app-version (forced update gate).
+const APP_VERSION = String(Date.now());
+
 export default defineConfig({
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
@@ -14,6 +17,7 @@ export default defineConfig({
     server: { entry: "server" },
   },
   vite: {
+    define: { __APP_VERSION__: JSON.stringify(APP_VERSION) },
     plugins: [
       VitePWA({
         strategies: "generateSW",

@@ -737,5 +737,5 @@ export const saveFrontendUrl = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/lib/db.server");
     const { error } = await supabaseAdmin.from("app_settings").upsert({ key: "frontend_url", value: 0, text_value: n.url, updated_at: new Date().toISOString() });
     if (error) return { ok: false, message: "تعذّر الحفظ — بقي الرابط السابق", url: await readFrontendUrl() };
-    return { ok: true, message: "تم الحفظ", url: n.url };
+    return { ok: true, message: "تم الحفظ — كل الأجهزة المفتوحة تتحول خلال دقيقة", url: n.url };
   });

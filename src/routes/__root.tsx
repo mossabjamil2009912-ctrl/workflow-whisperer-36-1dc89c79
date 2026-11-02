@@ -3,6 +3,7 @@ import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
 import { get as idbGet, set as idbSet, del as idbDel } from "idb-keyval";
 import { registerOfflineWorker } from "../lib/pwa";
+import { UpdateGate } from "../components/UpdateGate";
 import { saveShell } from "../lib/offline-shell";
 import {
   Outlet,
@@ -146,6 +147,7 @@ function RootComponent() {
     <PersistQueryClientProvider client={queryClient} persistOptions={{ persister, maxAge: 30 * 24 * 60 * 60_000, buster: "v1" }}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
+      <UpdateGate />
     </PersistQueryClientProvider>
   );
 }

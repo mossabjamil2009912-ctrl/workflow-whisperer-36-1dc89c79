@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiPublicAppVersionRouteImport } from './routes/api/public/app-version'
 import { Route as ApiPublicBotButtonLockRouteImport } from './routes/api/public/bot-button-lock'
 import { Route as ApiPublicBotCatalogRouteImport } from './routes/api/public/bot-catalog'
 import { Route as ApiPublicBotDiagnoseRouteImport } from './routes/api/public/bot-diagnose'
@@ -25,6 +26,11 @@ import { Route as ApiPublicCrmMediaRouteImport } from './routes/api/public/crm-m
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicAppVersionRoute = ApiPublicAppVersionRouteImport.update({
+  id: '/api/public/app-version',
+  path: '/api/public/app-version',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicBotButtonLockRoute = ApiPublicBotButtonLockRouteImport.update({
@@ -86,6 +92,7 @@ const ApiPublicCrmMediaRoute = ApiPublicCrmMediaRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/api/public/app-version': typeof ApiPublicAppVersionRoute
   '/api/public/bot-button-lock': typeof ApiPublicBotButtonLockRoute
   '/api/public/bot-catalog': typeof ApiPublicBotCatalogRoute
   '/api/public/bot-diagnose': typeof ApiPublicBotDiagnoseRoute
@@ -100,6 +107,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/api/public/app-version': typeof ApiPublicAppVersionRoute
   '/api/public/bot-button-lock': typeof ApiPublicBotButtonLockRoute
   '/api/public/bot-catalog': typeof ApiPublicBotCatalogRoute
   '/api/public/bot-diagnose': typeof ApiPublicBotDiagnoseRoute
@@ -115,6 +123,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/api/public/app-version': typeof ApiPublicAppVersionRoute
   '/api/public/bot-button-lock': typeof ApiPublicBotButtonLockRoute
   '/api/public/bot-catalog': typeof ApiPublicBotCatalogRoute
   '/api/public/bot-diagnose': typeof ApiPublicBotDiagnoseRoute
@@ -131,6 +140,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/api/public/app-version'
     | '/api/public/bot-button-lock'
     | '/api/public/bot-catalog'
     | '/api/public/bot-diagnose'
@@ -145,6 +155,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/api/public/app-version'
     | '/api/public/bot-button-lock'
     | '/api/public/bot-catalog'
     | '/api/public/bot-diagnose'
@@ -159,6 +170,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/api/public/app-version'
     | '/api/public/bot-button-lock'
     | '/api/public/bot-catalog'
     | '/api/public/bot-diagnose'
@@ -174,6 +186,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ApiPublicAppVersionRoute: typeof ApiPublicAppVersionRoute
   ApiPublicBotButtonLockRoute: typeof ApiPublicBotButtonLockRoute
   ApiPublicBotCatalogRoute: typeof ApiPublicBotCatalogRoute
   ApiPublicBotDiagnoseRoute: typeof ApiPublicBotDiagnoseRoute
@@ -194,6 +207,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/app-version': {
+      id: '/api/public/app-version'
+      path: '/api/public/app-version'
+      fullPath: '/api/public/app-version'
+      preLoaderRoute: typeof ApiPublicAppVersionRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/bot-button-lock': {
@@ -278,6 +298,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ApiPublicAppVersionRoute: ApiPublicAppVersionRoute,
   ApiPublicBotButtonLockRoute: ApiPublicBotButtonLockRoute,
   ApiPublicBotCatalogRoute: ApiPublicBotCatalogRoute,
   ApiPublicBotDiagnoseRoute: ApiPublicBotDiagnoseRoute,
