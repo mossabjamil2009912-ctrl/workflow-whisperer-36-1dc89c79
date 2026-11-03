@@ -11,13 +11,15 @@ export function FrontendRedirect() {
   useEffect(() => {
     const here = window.location.host;
     if (here !== new URL(DEFAULT_FRONTEND_URL).host) return; // preview, dev or already on the new host
+    let timer: ReturnType<typeof setTimeout> | undefined;
     const go = (url: string) => {
       let to: URL;
       try { to = new URL(url); } catch { return; }
-      if (to.host === here) return;
+      if (to.host === here) { clearTimeout(timer); setTarget(null); return; }
       setTarget(url);
       const dest = to.origin + window.location.pathname + window.location.search + window.location.hash;
-      setTimeout(() => window.location.replace(dest), 1500);
+      clearTimeout(timer);
+      timer = setTimeout(() => window.location.replace(dest), navigator.onLine ? 4000 : 1500);
     };
     const saved = localStorage.getItem(LS);
     if (saved) go(saved);
