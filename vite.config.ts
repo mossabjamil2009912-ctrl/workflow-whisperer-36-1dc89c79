@@ -8,7 +8,7 @@ import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 import { VitePWA } from "vite-plugin-pwa";
 
 // One version per build, shared by the client bundle and /api/public/app-version (forced update gate).
-const APP_VERSION = String(Date.now());
+const APP_VERSION = process.env.APP_VERSION || String(Date.now());
 
 // Vercel build: static SPA only; /_serverFn and /api are proxied to the Lovable host by vercel.json.
 const IS_VERCEL = process.env.VERCEL === "1";
@@ -22,7 +22,7 @@ export default defineConfig({
     server: { entry: "server" },
   },
   vite: {
-    define: { __APP_VERSION__: JSON.stringify(APP_VERSION), __ACTES_BUILD_TAG__: JSON.stringify(`__ACTES_BUILD__:"${APP_VERSION}"`) },
+    define: { __APP_VERSION__: JSON.stringify(APP_VERSION) },
     plugins: [
       VitePWA({
         strategies: "generateSW",
