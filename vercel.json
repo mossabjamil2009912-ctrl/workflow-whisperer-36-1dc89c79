@@ -1,5 +1,5 @@
 {
-  "buildCommand": "VERCEL=1 npx vite build",
+  "buildCommand": "VERCEL=1 npx vite build && node scripts/vercel-sw.mjs",
   "outputDirectory": "dist/client",
   "framework": null,
   "rewrites": [
