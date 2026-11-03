@@ -22,6 +22,7 @@ import { Route as ApiPublicBotPausedRouteImport } from './routes/api/public/bot-
 import { Route as ApiPublicBotReportRequestRouteImport } from './routes/api/public/bot-report-request'
 import { Route as ApiPublicBotTicketRouteImport } from './routes/api/public/bot-ticket'
 import { Route as ApiPublicCrmMediaRouteImport } from './routes/api/public/crm-media'
+import { Route as ApiPublicJobsGithubBackupRouteImport } from './routes/api/public/jobs/github-backup'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -89,6 +90,12 @@ const ApiPublicCrmMediaRoute = ApiPublicCrmMediaRouteImport.update({
   path: '/api/public/crm-media',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicJobsGithubBackupRoute =
+  ApiPublicJobsGithubBackupRouteImport.update({
+    id: '/api/public/jobs/github-backup',
+    path: '/api/public/jobs/github-backup',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -104,6 +111,7 @@ export interface FileRoutesByFullPath {
   '/api/public/bot-report-request': typeof ApiPublicBotReportRequestRoute
   '/api/public/bot-ticket': typeof ApiPublicBotTicketRoute
   '/api/public/crm-media': typeof ApiPublicCrmMediaRoute
+  '/api/public/jobs/github-backup': typeof ApiPublicJobsGithubBackupRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -119,6 +127,7 @@ export interface FileRoutesByTo {
   '/api/public/bot-report-request': typeof ApiPublicBotReportRequestRoute
   '/api/public/bot-ticket': typeof ApiPublicBotTicketRoute
   '/api/public/crm-media': typeof ApiPublicCrmMediaRoute
+  '/api/public/jobs/github-backup': typeof ApiPublicJobsGithubBackupRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -135,6 +144,7 @@ export interface FileRoutesById {
   '/api/public/bot-report-request': typeof ApiPublicBotReportRequestRoute
   '/api/public/bot-ticket': typeof ApiPublicBotTicketRoute
   '/api/public/crm-media': typeof ApiPublicCrmMediaRoute
+  '/api/public/jobs/github-backup': typeof ApiPublicJobsGithubBackupRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -152,6 +162,7 @@ export interface FileRouteTypes {
     | '/api/public/bot-report-request'
     | '/api/public/bot-ticket'
     | '/api/public/crm-media'
+    | '/api/public/jobs/github-backup'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -167,6 +178,7 @@ export interface FileRouteTypes {
     | '/api/public/bot-report-request'
     | '/api/public/bot-ticket'
     | '/api/public/crm-media'
+    | '/api/public/jobs/github-backup'
   id:
     | '__root__'
     | '/'
@@ -182,6 +194,7 @@ export interface FileRouteTypes {
     | '/api/public/bot-report-request'
     | '/api/public/bot-ticket'
     | '/api/public/crm-media'
+    | '/api/public/jobs/github-backup'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -198,6 +211,7 @@ export interface RootRouteChildren {
   ApiPublicBotReportRequestRoute: typeof ApiPublicBotReportRequestRoute
   ApiPublicBotTicketRoute: typeof ApiPublicBotTicketRoute
   ApiPublicCrmMediaRoute: typeof ApiPublicCrmMediaRoute
+  ApiPublicJobsGithubBackupRoute: typeof ApiPublicJobsGithubBackupRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -293,6 +307,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicCrmMediaRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/jobs/github-backup': {
+      id: '/api/public/jobs/github-backup'
+      path: '/api/public/jobs/github-backup'
+      fullPath: '/api/public/jobs/github-backup'
+      preLoaderRoute: typeof ApiPublicJobsGithubBackupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -310,6 +331,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicBotReportRequestRoute: ApiPublicBotReportRequestRoute,
   ApiPublicBotTicketRoute: ApiPublicBotTicketRoute,
   ApiPublicCrmMediaRoute: ApiPublicCrmMediaRoute,
+  ApiPublicJobsGithubBackupRoute: ApiPublicJobsGithubBackupRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
