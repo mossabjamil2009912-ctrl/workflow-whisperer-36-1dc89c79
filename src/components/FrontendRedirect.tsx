@@ -34,7 +34,7 @@ export function FrontendRedirect() {
     const id = setInterval(check, 60_000);
     const onVis = () => { if (document.visibilityState === "visible") check(); };
     document.addEventListener("visibilitychange", onVis);
-    return () => { clearInterval(id); document.removeEventListener("visibilitychange", onVis); };
+    return () => { clearTimeout(timer); clearInterval(id); document.removeEventListener("visibilitychange", onVis); };
   }, []);
   if (!target) return null;
   return (
