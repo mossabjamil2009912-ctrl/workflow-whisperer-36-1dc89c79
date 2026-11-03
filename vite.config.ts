@@ -10,8 +10,13 @@ import { VitePWA } from "vite-plugin-pwa";
 // One version per build, shared by the client bundle and /api/public/app-version (forced update gate).
 const APP_VERSION = String(Date.now());
 
+// Vercel build: static SPA only; /_serverFn and /api are proxied to the Lovable host by vercel.json.
+const IS_VERCEL = process.env.VERCEL === "1";
+
 export default defineConfig({
+  ...(IS_VERCEL ? { nitro: false as const } : {}),
   tanstackStart: {
+    ...(IS_VERCEL ? { spa: { enabled: true } } : {}),
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this
     server: { entry: "server" },

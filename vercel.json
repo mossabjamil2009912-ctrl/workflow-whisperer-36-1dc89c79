@@ -1,0 +1,10 @@
+{
+  "buildCommand": "VERCEL=1 npx vite build",
+  "outputDirectory": "dist/client",
+  "framework": null,
+  "rewrites": [
+    { "source": "/_serverFn/:path*", "destination": "https://workflow-whisperer-36.lovable.app/_serverFn/:path*" },
+    { "source": "/api/:path*", "destination": "https://workflow-whisperer-36.lovable.app/api/:path*" },
+    { "source": "/((?!assets/|sw\\.js|workbox-).*)", "destination": "/_shell.html" }
+  ]
+}
