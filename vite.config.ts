@@ -22,7 +22,7 @@ export default defineConfig({
     server: { entry: "server" },
   },
   vite: {
-    define: { __APP_VERSION__: JSON.stringify(APP_VERSION) },
+    define: { __APP_VERSION__: JSON.stringify(APP_VERSION), __ACTES_BUILD_TAG__: JSON.stringify(`__ACTES_BUILD__:"${APP_VERSION}"`) },
     plugins: [
       VitePWA({
         strategies: "generateSW",

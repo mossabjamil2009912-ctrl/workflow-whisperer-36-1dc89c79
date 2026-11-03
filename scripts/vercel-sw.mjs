@@ -1,5 +1,16 @@
 // Vercel build only: generate /sw.js for the static SPA output (same caching as vite.config.ts).
 import { generateSW } from "workbox-build";
+import { readFileSync, readdirSync, writeFileSync } from "node:fs";
+
+// The forced-update check must compare against THIS Vercel build, not the Lovable build.
+const js = readdirSync("dist/client/assets").filter((f) => f.endsWith(".js"));
+let version = null;
+for (const f of js) {
+  const m = readFileSync(`dist/client/assets/${f}`, "utf8").match(/__ACTES_BUILD__:"(\d+)"/);
+  if (m) { version = m[1]; break; }
+}
+if (!version) throw new Error("build version not found in bundle");
+writeFileSync("dist/client/app-version.json", JSON.stringify({ version }));
 const { count } = await generateSW({
   globDirectory: "dist/client",
   globPatterns: ["**/*.{js,css,woff2,png,svg,ico,webp,jpg}"],
