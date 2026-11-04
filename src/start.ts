@@ -26,7 +26,7 @@ const isTrustedOrigin = (origin: string, reqUrl: string) => {
   if (origin === new URL(reqUrl).origin) return true;
   try {
     const h = new URL(origin).hostname;
-    return new URL(origin).protocol === "https:" && h.endsWith("-actes.vercel.app") && h.startsWith("workflow-whisperer-36");
+    return new URL(origin).protocol === "https:" && h.endsWith(".vercel.app") && h.startsWith("workflow-whisperer-36-");
   } catch {
     return false;
   }
