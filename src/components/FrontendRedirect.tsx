@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getFrontendUrl } from "@/lib/crm.functions";
-import { DEFAULT_FRONTEND_URL } from "@/lib/server-url-rules";
+import { DEFAULT_FRONTEND_URL, LEGACY_FRONTEND_HOSTS } from "@/lib/server-url-rules";
 
 const LS = "actes_frontend_url";
 
@@ -10,19 +10,22 @@ export function FrontendRedirect() {
   const [target, setTarget] = useState<string | null>(null);
   useEffect(() => {
     const here = window.location.host;
-    if (here !== new URL(DEFAULT_FRONTEND_URL).host) return; // preview, dev or already on the new host
+    const legacy = LEGACY_FRONTEND_HOSTS.includes(here);
+    if (!legacy && here !== new URL(DEFAULT_FRONTEND_URL).host) return; // preview or dev
     let timer: ReturnType<typeof setTimeout> | undefined;
     const go = (url: string) => {
       let to: URL;
       try { to = new URL(url); } catch { return; }
+      if (legacy && LEGACY_FRONTEND_HOSTS.includes(to.host)) to = new URL(DEFAULT_FRONTEND_URL);
       if (to.host === here) { clearTimeout(timer); setTarget(null); return; }
-      setTarget(url);
+      setTarget(to.origin);
       const dest = to.origin + window.location.pathname + window.location.search + window.location.hash;
       clearTimeout(timer);
       timer = setTimeout(() => window.location.replace(dest), navigator.onLine ? 4000 : 1500);
     };
     const saved = localStorage.getItem(LS);
     if (saved) go(saved);
+    else if (legacy) go(DEFAULT_FRONTEND_URL);
     const check = () => {
       if (!navigator.onLine) return;
       getFrontendUrl().then(({ url }) => {
