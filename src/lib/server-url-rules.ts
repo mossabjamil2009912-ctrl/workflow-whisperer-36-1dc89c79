@@ -1,6 +1,8 @@
 // Pure validation for the bot server (n8n) URL — shared by server and UI, no secrets here.
 export const N8N_URL = "https://n8n.srv1994780.hstgr.cloud"; // fixed, not editable
-export const DEFAULT_FRONTEND_URL = "https://workflow-whisperer-36.lovable.app";
+export const DEFAULT_FRONTEND_URL = "https://actes-crm.lovable.app";
+// Old addresses of this app; installed copies opened there are moved to the saved frontend URL.
+export const LEGACY_FRONTEND_HOSTS = ["workflow-whisperer-36.lovable.app", "workflow-whisperer-36-1dc89c79.vercel.app"];
 
 export function normalizeServerUrl(input: string): { ok: true; url: string } | { ok: false; error: string } {
   let u: URL;
