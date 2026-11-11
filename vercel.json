@@ -1,15 +1,12 @@
 {
-  "buildCommand": "export APP_VERSION=$(date +%s%3N) VERCEL=1 && npx vite build && node scripts/vercel-sw.mjs",
-  "outputDirectory": "dist/client",
-  "framework": null,
   "rewrites": [
-    { "source": "/api/public/app-version", "destination": "/app-version.json" },
-    { "source": "/_serverFn/:path*", "destination": "https://workflow-whisperer-36.lovable.app/_serverFn/:path*" },
-    { "source": "/api/:path*", "destination": "https://workflow-whisperer-36.lovable.app/api/:path*" },
-    { "source": "/((?!assets/|sw\\.js|workbox-|app-version\\.json|\\.well-known/).*)", "destination": "/_shell.html" }
-  ],
-  "headers": [
-    { "source": "/(app-version\\.json|sw\\.js)", "headers": [{ "key": "Cache-Control", "value": "no-store" }] },
-    { "source": "/.well-known/assetlinks.json", "headers": [{ "key": "Content-Type", "value": "application/json" }] }
+    {
+      "source": "/_serverFn/(.*)",
+      "destination": "https://actes-crm.lovable.app/_serverFn/$1"
+    },
+    {
+      "source": "/api/(.*)",
+      "destination": "https://actes-crm.lovable.app/api/$1"
+    }
   ]
 }
